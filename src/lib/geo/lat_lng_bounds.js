@@ -1,4 +1,4 @@
-import LatLng from "./lat_lng";
+import LatLng from './lat_lng';
 
 export default class LatLngBounds {
   static convert = (a) => {

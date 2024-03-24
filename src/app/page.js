@@ -8,7 +8,7 @@ function Page() {
   const mapRef = useRef();
 
   const handleMapChange = ({ center, bounds, size }) => {
-    const newB = getBounds(size, center, 2);
+    const newB = getBoundsAtMinZoomLevel(size, center, 2);
     const newBounds = {
       ne: {
         lat: newB[6],
@@ -30,49 +30,23 @@ function Page() {
     console.log('Bounds at minZoom:', bounds, newBounds);
   };
 
-  function centerPoint() {
-    return new Point(0, 0);
-  }
-
-  function lngX(lon, worldSize) {
-    return ((180 + lon) * worldSize) / 360;
-  }
-
-  // latitude to absolute y coord
-  function latY(lat, worldSize) {
-    const y =
-      (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
-    return ((180 - y) * worldSize) / 360;
-  }
-
-  function xLng(x, worldSize) {
-    return (x * 360) / (worldSize || 512) - 180;
-  }
-
-  function yLat(y, worldSize) {
-    const y2 = 180 - (y * 360) / worldSize;
-    return (360 / Math.PI) * Math.atan(Math.exp((y2 * Math.PI) / 180)) - 90;
-  }
-
-  function x(center, worldSize) {
-    return lngX(center.lng, worldSize);
-  }
-
-  function y(center, worldSize) {
-    return latY(center.lat, worldSize);
-  }
-
-  function unproject(point, worldSize) {
-    return new LatLng(yLat(point.y, worldSize), xLng(point.x, worldSize));
-  }
-
   function pointLocation(p, center, worldSize) {
-    const p2 = centerPoint()._sub(p)._rotate(-0);
-    const point = new Point(x(center, worldSize), y(center, worldSize));
-    return unproject(point.sub(p2), worldSize);
+    const centerPoint = new Point(0, 0);
+    const p2 = centerPoint._sub(p)._rotate(-0);
+    const lngX = ((180 + center.lng) * worldSize) / 360;
+    const y =
+      (180 / Math.PI) *
+      Math.log(Math.tan(Math.PI / 4 + (center.lat * Math.PI) / 360));
+    const latY = ((180 - y) * worldSize) / 360;
+    const point = new Point(lngX, latY);
+    const y2 = 180 - (point.sub(p2).y * 360) / worldSize;
+    const yLat =
+      (360 / Math.PI) * Math.atan(Math.exp((y2 * Math.PI) / 180)) - 90;
+    const xLng = (point.sub(p2).x * 360) / (worldSize || 512) - 180;
+    return new LatLng(yLat, xLng);
   }
 
-  function getBounds(size, center, zoom) {
+  function getBoundsAtMinZoomLevel(size, center, zoom) {
     const zoomV = Math.min(Math.max(zoom, 2), 15);
     const scale = Math.pow(2, zoomV);
     const worldSize = 256 * scale;

@@ -1,7 +1,7 @@
-import Point from "@mapbox/point-geometry";
+import Point from '@mapbox/point-geometry';
 
-import LatLng from "./lat_lng";
-import Transform from "./transform";
+import LatLng from './lat_lng';
+import Transform from './transform';
 
 export default class Geo {
   constructor(tileSize) {

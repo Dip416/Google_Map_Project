@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import Point from "@mapbox/point-geometry";
-import LatLng from "./lat_lng";
-import { wrap } from "./wrap";
+import Point from '@mapbox/point-geometry';
+import LatLng from './lat_lng';
+import { wrap } from './wrap';
 
 // A single transform, generally used for a single tile to be scaled, rotated, and zoomed.
 export default class Transform {
